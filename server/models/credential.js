@@ -9,7 +9,7 @@ const credentialSchema = new Schema(
       required: true,
     },
     platform: {
-      // the name of the platform for which user wants to save credentials
+      // the name of the platform(site/app) for which user wants to save credentials
       type: String,
       required: true,
       trim: true,
@@ -30,10 +30,12 @@ const credentialSchema = new Schema(
       type: String,
       required: false,
     },
+    iv: {
+      type: String,
+      required: true,
+    },
   },
-  {
-    timestamps: true,
-  },
+  { timestamps: true },
 );
 
 module.exports = mongoose.model("Credential", credentialSchema);

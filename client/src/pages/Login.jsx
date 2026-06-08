@@ -32,7 +32,7 @@ const Login = () => {
   return (
     <div className="flex h-screen flex-col items-center justify-center">
       <div className="glass-card w-[85vw] md:w-[50vw] lg:w-[30vw] p-8">
-        <h1 className="text-3xl font-bold text-center mb-1 bg-linear-to-r from-white from-30% to-indigo-500 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(99,102,241,0.4)] tracking-wider py-1">
+        <h1 className="text-3xl font-bold text-center mb-1 bg-linear-to-r from-white from-30% to-indigo-500 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(99,102,241,0.4)] py-1">
           Password Vault
         </h1>
         <h3 className="text-center font-semibold text-gray-300 mb-6">

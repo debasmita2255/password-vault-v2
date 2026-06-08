@@ -18,3 +18,16 @@ input:-webkit-autofill:active {
   -webkit-text-fill-color: white !important;
   font-family: inherit !important;
 }
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Space Grotesk", sans-serif;
+}
+
+body {
+  font-family: "Google Sans Code", monospace;
+}
