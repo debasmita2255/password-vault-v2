@@ -1,12 +1,10 @@
 @import "tailwindcss";
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-  border-radius: 5%;
+  border: 1px solid rgba(255, 255, 255, 0.09);
 }
 
 /* Override Browser Autofill Styling */
@@ -30,4 +28,78 @@ h6 {
 
 body {
   font-family: "Google Sans Code", monospace;
+}
+
+/* --- Navbar Link Transitions --- */
+
+.nav-link {
+  position: relative;
+  display: inline-block;
+  width: fit-content;
+  padding: 0.25rem 0;
+  font-weight: 500;
+  transition: color 0.3s ease-out;
+  will-change: color;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 0;
+  background-color: #818cf8;
+  transition: width 0.3s ease-out;
+}
+
+/* --- Desktop States --- */
+.nav-desktop-inactive {
+  color: #9ca3af;
+}
+.nav-desktop-inactive:hover {
+  color: #ffffff;
+}
+.nav-desktop-inactive:hover::after {
+  width: 100%;
+}
+
+.nav-desktop-active {
+  color: #818cf8;
+}
+.nav-desktop-active::after {
+  width: 100%;
+  background-color: #818cf8;
+}
+
+/* --- Mobile States --- */
+.nav-mobile-inactive {
+  color: #9ca3af;
+}
+.nav-mobile-inactive:active {
+  color: #ffffff;
+}
+
+.nav-mobile-active {
+  color: #818cf8;
+}
+.nav-mobile-active::after {
+  width: 100%;
+  background-color: #818cf8;
+}
+
+/* --- Page Transition Animation --- */
+@keyframes pageFadeSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-page-enter {
+  animation: pageFadeSlideUp 0.4s ease-out forwards;
 }

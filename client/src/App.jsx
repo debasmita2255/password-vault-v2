@@ -10,6 +10,8 @@ import {
 import Register from "../src/pages/Register";
 import Login from "../src/pages/Login";
 import Dashboard from "../src/pages/Dashboard";
+import Profile from "../src/pages/Profile";
+import FAQs from "../src/pages/FAQs";
 
 const App = () => {
   const navigate = useNavigate();
@@ -39,6 +41,8 @@ const App = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/faqs" element={<FAQs />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </>
