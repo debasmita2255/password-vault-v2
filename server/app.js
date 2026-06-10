@@ -7,6 +7,7 @@ require("dotenv").config();
 require("./connection/conn");
 
 const userRoutes = require("./routes/user");
+const credentialRoutes = require("./routes/credential");
 
 app.use(
   cors({
@@ -22,6 +23,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/credentials", credentialRoutes);
 
 const PORT = process.env.PORT || 1000;
 
