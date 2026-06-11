@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import toast from "react-hot-toast";
 import api from "../api";
 
 const NAV_LINKS = [
@@ -26,7 +27,7 @@ const Navbar = () => {
     try {
       const res = await api.post("/users/logout");
       localStorage.removeItem("userLoggedIn");
-      alert(res.data.success);
+      toast.success(res.data.success);
       navigate("/login");
     } catch (error) {
       console.error("Logout failed.", error);

@@ -5,6 +5,7 @@
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.09);
+  isolation: isolate !important;
 }
 
 /* Override Browser Autofill Styling */
@@ -102,4 +103,15 @@ body {
 
 .animate-page-enter {
   animation: pageFadeSlideUp 0.4s ease-out forwards;
+}
+
+/*  --- Input card styles --- */
+@layer components {
+  .input-field {
+    @apply w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all;
+  }
+
+  .btn-primary {
+    @apply w-full bg-white/90 text-indigo-800 font-bold py-3 rounded-xl hover:bg-white transition-all duration-300 hover:shadow-[0_0_15px_rgba(255,255,255,0.3)] focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed;
+  }
 }

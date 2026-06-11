@@ -6,6 +6,7 @@ import {
   useLocation,
   Navigate,
 } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 
 import Register from "../src/pages/Register";
 import Login from "../src/pages/Login";
@@ -36,6 +37,32 @@ const App = () => {
 
   return (
     <>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 6000,
+          style: {
+            background: "#2e2e2e",
+            color: "#ffffff",
+            minWidth: "300px",
+            padding: "16px",
+            borderRadius: "8px",
+          },
+          success: {
+            iconTheme: {
+              primary: "#22c55e",
+              secondary: "#000000",
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: "#ef4444",
+              secondary: "#000000",
+            },
+          },
+        }}
+      />
+
       <div className="fixed inset-0 -z-10 h-full w-full items-center px-5 py-24 [background:radial-gradient(125%_125%_at_50%_10%,#000_40%,#63e_100%)]"></div>
       <Routes>
         <Route path="/register" element={<Register />} />

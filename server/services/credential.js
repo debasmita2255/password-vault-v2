@@ -26,7 +26,7 @@ const addCredential = async (req, res) => {
 
     return res
       .status(201)
-      .json({ success: "Credential saved safely!", credential: newCredential });
+      .json({ success: "Credentials saved!", credential: newCredential });
   } catch (error) {
     console.error("Add Credential Error: ", error);
     return res.status(500).json({ error: "Internal server error!" });
@@ -41,7 +41,7 @@ const getCredentials = async (req, res) => {
 
     return res.status(200).json({ success: true, credentials });
   } catch (error) {
-    console.error("Get Credentials Error: ", error);
+    console.error("Get Credential Error: ", error);
     return res.status(500).json({ error: "Internal server error!" });
   }
 };
@@ -60,12 +60,12 @@ const updateCredential = async (req, res) => {
     if (!updatedCredential) {
       return res
         .status(404)
-        .json({ error: "Credential not found or unauthorized." });
+        .json({ error: "Credentials not found or unauthorized." });
     }
 
     return res
       .status(200)
-      .json({ success: "Credential updated!", credential: updatedCredential });
+      .json({ success: "Credentials updated!", credential: updatedCredential });
   } catch (error) {
     console.error("Update Credential Error: ", error);
     return res.status(500).json({ error: "Internal server error!" });
@@ -84,16 +84,14 @@ const deleteCredential = async (req, res) => {
     if (!deletedCredential) {
       return res
         .status(404)
-        .json({ error: "Credential not found or unauthorized." });
+        .json({ error: "Credentials not found or unauthorized." });
     }
 
     await User.findByIdAndUpdate(req.user.id, {
       $pull: { credentials: id },
     });
 
-    return res
-      .status(200)
-      .json({ success: "Credential deleted successfully!" });
+    return res.status(200).json({ success: "Credentials deleted!" });
   } catch (error) {
     console.error("Delete Credential Error: ", error);
     return res.status(500).json({ error: "Internal server error!" });

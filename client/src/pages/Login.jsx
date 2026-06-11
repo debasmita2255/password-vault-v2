@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import api from "../api";
 import PageTransition from "../components/PageTransition";
+import PasswordInput from "../components/PasswordInput";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -22,11 +24,11 @@ const Login = () => {
         withCredentials: true, // this allows the pvUserToken cookie to be saved
       });
       localStorage.setItem("userLoggedIn", "yes");
-      alert(res.data.success);
+      toast.success(res.data.success);
       navigate("/dashboard");
     } catch (error) {
       const errorMessage = error.response?.data?.error || "Network/CORS Error";
-      alert(`Error: ${errorMessage}`);
+      toast.error(`Error: ${errorMessage}`);
     }
   };
 
@@ -46,26 +48,19 @@ const Login = () => {
               type="email"
               required
               placeholder="Email"
-              className="bg-white/10 border border-white/20 text-white placeholder-gray-400 rounded-lg px-4 py-3 w-full outline-none focus:border-white/60 focus:bg-white/20 transition-all"
+              className="input-field"
               name="email"
               value={Values.email}
               onChange={change}
               autoComplete="email"
             />
-            <input
-              type="password"
-              required
-              placeholder="Password"
-              className="bg-white/10 border border-white/20 text-white placeholder-gray-400 rounded-lg px-4 py-3 w-full outline-none focus:border-white/60 focus:bg-white/20 transition-all"
+            <PasswordInput
               name="password"
               value={Values.password}
               onChange={change}
-              autoComplete="current-password"
+              placeholder="Password"
             />
-            <button
-              className="bg-white/90 text-indigo-800 font-bold py-3 mt-4 rounded-lg hover:bg-white transition-all duration-300 hover:shadow-[0_0_15px_rgba(255,255,255,0.3)]"
-              type="submit"
-            >
+            <button className="btn-primary mt-2" type="submit">
               Login
             </button>
             <p className="text-center mt-4 text-sm font-medium text-gray-300">

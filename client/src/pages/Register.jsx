@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import api from "../api";
 import PageTransition from "../components/PageTransition";
+import PasswordInput from "../components/PasswordInput";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -20,10 +22,12 @@ const Register = () => {
     e.preventDefault();
     try {
       const res = await api.post("/users/register", Values);
-      alert(res.data.success);
+      toast.success(res.data.success);
       navigate("/login");
     } catch (error) {
-      alert(`Error: ${error.response?.data?.error || "Registration failed"}`);
+      toast.error(
+        `Error: ${error.response?.data?.error || "Registration failed"}`,
+      );
     }
   };
 
@@ -43,7 +47,7 @@ const Register = () => {
               type="text"
               required
               placeholder="Username"
-              className="bg-white/10 border border-white/20 text-white placeholder-gray-400 rounded-lg px-4 py-3 w-full outline-none focus:border-white/60 focus:bg-white/20 transition-all"
+              className="input-field"
               name="username"
               value={Values.username}
               onChange={change}
@@ -53,26 +57,19 @@ const Register = () => {
               type="email"
               required
               placeholder="Email"
-              className="bg-white/10 border border-white/20 text-white placeholder-gray-400 rounded-lg px-4 py-3 w-full outline-none focus:border-white/60 focus:bg-white/20 transition-all"
+              className="input-field"
               name="email"
               value={Values.email}
               onChange={change}
               autoComplete="email"
             />
-            <input
-              type="password"
-              required
-              placeholder="Password"
-              className="bg-white/10 border border-white/20 text-white placeholder-gray-400 rounded-lg px-4 py-3 w-full outline-none focus:border-white/60 focus:bg-white/20 transition-all"
+            <PasswordInput
               name="password"
               value={Values.password}
               onChange={change}
-              autoComplete="new-password"
+              placeholder="Password"
             />
-            <button
-              type="submit"
-              className="bg-white/90 text-indigo-800 font-bold py-3 mt-4 rounded-lg hover:bg-white transition-all duration-300 hover:shadow-[0_0_15px_rgba(255,255,255,0.3)]"
-            >
+            <button type="submit" className="btn-primary mt-2">
               Register
             </button>
             <p className="text-center mt-4 text-sm font-medium text-gray-300">
