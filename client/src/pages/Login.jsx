@@ -4,9 +4,11 @@ import toast from "react-hot-toast";
 import api from "../api";
 import PageTransition from "../components/PageTransition";
 import PasswordInput from "../components/PasswordInput";
+import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { setMasterPassword } = useAuth();
   const [Values, setValues] = useState({
     email: "",
     password: "",
@@ -24,6 +26,9 @@ const Login = () => {
         withCredentials: true, // this allows the pvUserToken cookie to be saved
       });
       localStorage.setItem("userLoggedIn", "yes");
+
+      setMasterPassword(Values.password);
+
       toast.success(res.data.success);
       navigate("/dashboard");
     } catch (error) {

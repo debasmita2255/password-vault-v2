@@ -5,14 +5,20 @@ import PageTransition from "../components/PageTransition";
 import api from "../api";
 import CredentialForm from "../components/CredentialForm";
 import CredentialTable from "../components/CredentialTable";
+import { encryptPassword, decryptPassword } from "../utils/encryption";
+import { useAuth } from "../context/AuthContext";
+import UnlockVault from "../components/UnlockVault";
 
 const Dashboard = () => {
+  const { masterPassword, setMasterPassword } = useAuth();
+
   const [formData, setFormData] = useState({
     platform: "",
     loginId: "",
     password: "",
     websiteUrl: "",
   });
+
   const [credentials, setCredentials] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -21,7 +27,22 @@ const Dashboard = () => {
   const fetchCredentials = async () => {
     try {
       const res = await api.get("/credentials/getAll");
-      setCredentials(res.data.credentials || []);
+      const encryptedData = res.data.credentials || [];
+
+      // decrypt the vault immediately upon fetching
+      const decryptedVault = encryptedData.map((cred) => {
+        const plainText = decryptPassword(
+          cred.encryptedPassword,
+          cred.iv,
+          masterPassword,
+        );
+        return {
+          ...cred,
+          decryptedPassword: plainText || "Decryption Failed",
+        };
+      });
+
+      setCredentials(decryptedVault);
     } catch (error) {
       toast.error(error.response?.data?.error || "Could not load your vault.");
     } finally {
@@ -30,14 +51,23 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    fetchCredentials();
-  }, []);
+    // only attempt to fetch if the master password is in RAM
+    if (masterPassword) {
+      fetchCredentials();
+    }
+  }, [masterPassword]);
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleCopy = (text) => {
     if (!text) return;
+
+    if (text === "Decryption Failed") {
+      toast.error("Cannot copy: Decryption failed or data is corrupted.");
+      return;
+    }
+
     navigator.clipboard.writeText(text);
     toast.success("Copied to clipboard!");
   };
@@ -60,7 +90,11 @@ const Dashboard = () => {
     });
     setEditingId(cred._id);
     setCredentials((prev) => prev.filter((item) => item._id !== cred._id));
-    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    // only scroll to top on smaller screens where the input form sits at the top of the screen
+    if (window.innerWidth < 1024) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
 
   const cancelEdit = () => {
@@ -97,16 +131,18 @@ const Dashboard = () => {
     setIsSubmitting(true);
 
     try {
-      const dummyEncryptedPassword =
-        "encrypted_string_here_" + formData.password;
-      const dummyIv = "random_iv_string_here";
+      // encrypt the password before transmission
+      const { encryptedPassword, iv } = encryptPassword(
+        formData.password,
+        masterPassword,
+      );
 
       const payload = {
         platform: formData.platform,
         loginId: formData.loginId,
         websiteUrl: formData.websiteUrl,
-        encryptedPassword: dummyEncryptedPassword,
-        iv: dummyIv,
+        encryptedPassword: encryptedPassword,
+        iv: iv,
       };
 
       if (editingId) {
@@ -127,6 +163,18 @@ const Dashboard = () => {
       setIsSubmitting(false);
     }
   };
+
+  // if password is not saved in RAM, show unlock screen
+  if (!masterPassword) {
+    return (
+      <>
+        <Navbar />
+        <PageTransition>
+          <UnlockVault setMasterPassword={setMasterPassword} />
+        </PageTransition>
+      </>
+    );
+  }
 
   return (
     <div className="min-h-screen pt-36 px-4 md:px-8 pb-20">

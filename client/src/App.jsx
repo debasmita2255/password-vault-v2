@@ -13,6 +13,7 @@ import Login from "../src/pages/Login";
 import Dashboard from "../src/pages/Dashboard";
 import Profile from "../src/pages/Profile";
 import FAQs from "../src/pages/FAQs";
+import { AuthProvider } from "./context/AuthContext";
 
 const App = () => {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ const App = () => {
   }, [navigate, location.pathname]);
 
   return (
-    <>
+    <AuthProvider>
       <Toaster
         position="top-right"
         toastOptions={{
@@ -72,7 +73,7 @@ const App = () => {
         <Route path="/faqs" element={<FAQs />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
-    </>
+    </AuthProvider>
   );
 };
 

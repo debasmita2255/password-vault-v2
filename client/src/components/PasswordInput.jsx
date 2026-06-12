@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const PasswordInput = ({
   value,
@@ -8,6 +8,12 @@ const PasswordInput = ({
   required = true,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    if (value === "") {
+      setShowPassword(false);
+    }
+  }, [value]);
 
   return (
     <div className="relative">

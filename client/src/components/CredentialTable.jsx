@@ -60,7 +60,7 @@ const CredentialTable = ({
 
       {isLoading ? (
         <div className="text-center py-10 text-gray-400">
-          Decrypting vault...
+          Decrypting data...
         </div>
       ) : credentials.length === 0 ? (
         <div className="text-center py-10 text-gray-500 border border-dashed border-white/10 rounded-2xl">
@@ -130,7 +130,7 @@ const CredentialTable = ({
                       <button
                         onClick={() =>
                           handleCopy(
-                            cred.decryptedPassword || "Cannot copy raw string",
+                            cred.decryptedPassword || "Decryption Failed",
                           )
                         }
                         title="Copy Password"
