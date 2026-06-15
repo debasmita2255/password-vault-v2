@@ -60,7 +60,8 @@ const CredentialTable = ({
 
       {isLoading ? (
         <div className="text-center py-10 text-gray-400">
-          Decrypting data...
+          Decrypting data... <br />
+          (This may take a while)
         </div>
       ) : credentials.length === 0 ? (
         <div className="text-center py-10 text-gray-500 border border-dashed border-white/10 rounded-2xl">
@@ -84,7 +85,11 @@ const CredentialTable = ({
               {credentials.map((cred) => (
                 <tr
                   key={cred._id}
-                  className="border-b border-white/5 transition-colors group hover:bg-white/3"
+                  className={`border-b border-white/5 transition-all duration-300 group hover:bg-white/3 ${
+                    editingId === cred._id
+                      ? "opacity-30 pointer-events-none"
+                      : "opacity-100"
+                  }`}
                 >
                   <td className="py-4 pl-4 pr-6 font-medium text-gray-200 truncate">
                     {cred.platform}

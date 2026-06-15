@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import api from "../api";
 import PageTransition from "../components/PageTransition";
 import PasswordInput from "../components/PasswordInput";
+import PasswordRequirements from "../components/PasswordRequirements";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -31,6 +32,18 @@ const Register = () => {
     }
   };
 
+  const calculateStrength = (password) => {
+    return {
+      length: password.length >= 12,
+      uppercase: /[A-Z]/.test(password),
+      lowercase: /[a-z]/.test(password),
+      number: /[0-9]/.test(password),
+      special: /[^A-Za-z0-9]/.test(password),
+    };
+  };
+
+  const criteria = calculateStrength(Values.password);
+  const isPasswordStrong = Object.values(criteria).every(Boolean);
   return (
     <PageTransition>
       <div className="flex h-screen flex-col items-center justify-center">
@@ -69,9 +82,17 @@ const Register = () => {
               onChange={change}
               placeholder="Password"
             />
-            <button type="submit" className="btn-primary mt-2">
+
+            <PasswordRequirements criteria={criteria} />
+
+            <button
+              className={`btn-primary mt-4 ${!isPasswordStrong ? "opacity-50 cursor-not-allowed" : ""}`}
+              type="submit"
+              disabled={!isPasswordStrong}
+            >
               Register
             </button>
+
             <p className="text-center mt-4 text-sm font-medium text-gray-300">
               Already have an account?{" "}
               <Link

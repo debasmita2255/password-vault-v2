@@ -27,6 +27,7 @@ const Navbar = () => {
     try {
       const res = await api.post("/users/logout");
       localStorage.removeItem("userLoggedIn");
+      localStorage.removeItem("userSalt");
       toast.success(res.data.success);
       navigate("/login");
     } catch (error) {

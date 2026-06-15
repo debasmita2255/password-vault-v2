@@ -12,6 +12,8 @@ import UnlockVault from "../components/UnlockVault";
 const Dashboard = () => {
   const { masterPassword, setMasterPassword } = useAuth();
 
+  const userSalt = localStorage.getItem("userSalt");
+
   const [formData, setFormData] = useState({
     platform: "",
     loginId: "",
@@ -35,6 +37,7 @@ const Dashboard = () => {
           cred.encryptedPassword,
           cred.iv,
           masterPassword,
+          userSalt,
         );
         return {
           ...cred,
@@ -53,7 +56,13 @@ const Dashboard = () => {
   useEffect(() => {
     // only attempt to fetch if the master password is in RAM
     if (masterPassword) {
-      fetchCredentials();
+      // thread yielding since PBKDF2 is a heavy, synchronous mathematical operation and completely locks up the browser's main thread
+      const timeoutId = setTimeout(() => {
+        fetchCredentials();
+      }, 500);
+
+      // cleanup function in case the user quickly navigates away
+      return () => clearTimeout(timeoutId);
     }
   }, [masterPassword]);
 
@@ -89,7 +98,6 @@ const Dashboard = () => {
       websiteUrl: cred.websiteUrl || "",
     });
     setEditingId(cred._id);
-    setCredentials((prev) => prev.filter((item) => item._id !== cred._id));
 
     // only scroll to top on smaller screens where the input form sits at the top of the screen
     if (window.innerWidth < 1024) {
@@ -100,7 +108,6 @@ const Dashboard = () => {
   const cancelEdit = () => {
     setEditingId(null);
     handleClear();
-    fetchCredentials();
   };
 
   const handleDelete = async (id) => {
@@ -118,7 +125,7 @@ const Dashboard = () => {
     try {
       const res = await api.delete(`/credentials/delete/${id}`);
       toast.success(res.data.success);
-      fetchCredentials();
+      setCredentials((prev) => prev.filter((item) => item._id !== id));
     } catch (error) {
       toast.error(
         error.response?.data?.error || "Failed to delete credentials.",
@@ -135,6 +142,7 @@ const Dashboard = () => {
       const { encryptedPassword, iv } = encryptPassword(
         formData.password,
         masterPassword,
+        userSalt,
       );
 
       const payload = {
@@ -148,14 +156,27 @@ const Dashboard = () => {
       if (editingId) {
         const res = await api.put(`/credentials/update/${editingId}`, payload);
         toast.success(res.data.success);
+
+        setCredentials((prev) =>
+          prev.map((item) =>
+            item._id === editingId
+              ? { ...res.data.credential, decryptedPassword: formData.password }
+              : item,
+          ),
+        );
+
         setEditingId(null);
       } else {
         const res = await api.post("/credentials/add", payload);
         toast.success(res.data.success);
+
+        setCredentials((prev) => [
+          { ...res.data.credential, decryptedPassword: formData.password },
+          ...prev,
+        ]);
       }
 
       handleClear();
-      fetchCredentials();
     } catch (error) {
       toast.error(error.response?.data?.error || "Failed to save credentials.");
       if (editingId) fetchCredentials();
@@ -164,13 +185,16 @@ const Dashboard = () => {
     }
   };
 
-  // if password is not saved in RAM, show unlock screen
-  if (!masterPassword) {
+  // if master password or salt is not saved in RAM, show unlock screen
+  if (!masterPassword || !userSalt) {
     return (
       <>
         <Navbar />
         <PageTransition>
-          <UnlockVault setMasterPassword={setMasterPassword} />
+          <UnlockVault
+            setMasterPassword={setMasterPassword}
+            userSalt={userSalt}
+          />
         </PageTransition>
       </>
     );

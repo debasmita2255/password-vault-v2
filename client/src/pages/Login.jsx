@@ -26,6 +26,7 @@ const Login = () => {
         withCredentials: true, // this allows the pvUserToken cookie to be saved
       });
       localStorage.setItem("userLoggedIn", "yes");
+      localStorage.setItem("userSalt", Values.email);
 
       setMasterPassword(Values.password);
 

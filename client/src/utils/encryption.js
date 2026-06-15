@@ -1,14 +1,35 @@
 import CryptoJS from "crypto-js";
 
-// derive a consistent 256-bit key from the user's master password
-const deriveKey = (masterPassword) => {
-  return CryptoJS.SHA256(masterPassword);
+let cachedKey = null;
+let cachedPassword = null;
+let cachedSalt = null;
+
+const deriveKey = (masterPassword, salt) => {
+  if (!salt) {
+    throw new Error(
+      "CRITICAL: Cryptographic salt is missing. Halting encryption.",
+    );
+  }
+
+  if (cachedKey && cachedPassword === masterPassword && cachedSalt === salt) {
+    return cachedKey;
+  }
+
+  const key = CryptoJS.PBKDF2(masterPassword, salt, {
+    keySize: 256 / 32,
+    iterations: 100000,
+  });
+
+  cachedKey = key;
+  cachedPassword = masterPassword;
+  cachedSalt = salt;
+  return key;
 };
 
 // encrypts a raw password
 // returns an object containing the ciphertext and the unique IV
-export const encryptPassword = (plainTextPassword, masterPassword) => {
-  const key = deriveKey(masterPassword);
+export const encryptPassword = (plainTextPassword, masterPassword, salt) => {
+  const key = deriveKey(masterPassword, salt);
 
   // generate a random 16-byte IV for this specific credential
   const iv = CryptoJS.lib.WordArray.random(16);
@@ -20,8 +41,8 @@ export const encryptPassword = (plainTextPassword, masterPassword) => {
   });
 
   return {
-    encryptedPassword: encrypted.toString(), // base64 ciphertext
-    iv: CryptoJS.enc.Base64.stringify(iv), // base64 IV
+    encryptedPassword: encrypted.toString(),
+    iv: CryptoJS.enc.Base64.stringify(iv),
   };
 };
 
@@ -30,9 +51,10 @@ export const decryptPassword = (
   encryptedPassword,
   ivBase64,
   masterPassword,
+  salt,
 ) => {
   try {
-    const key = deriveKey(masterPassword);
+    const key = deriveKey(masterPassword, salt);
     const iv = CryptoJS.enc.Base64.parse(ivBase64);
 
     const decrypted = CryptoJS.AES.decrypt(encryptedPassword, key, {
@@ -43,9 +65,7 @@ export const decryptPassword = (
 
     return decrypted.toString(CryptoJS.enc.Utf8);
   } catch (error) {
-    console.error(
-      "Decryption failed. Incorrect master password or corrupted data.",
-    );
+    console.error("Decryption failed.");
     return null;
   }
 };
