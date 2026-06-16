@@ -6,6 +6,7 @@ const PasswordInput = ({
   name,
   placeholder = "••••••••••••",
   required = true,
+  autoComplete,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -24,6 +25,7 @@ const PasswordInput = ({
         onChange={onChange}
         placeholder={placeholder}
         required={required}
+        autoComplete={autoComplete || "off"}
         className="input-field pr-12"
       />
       <button

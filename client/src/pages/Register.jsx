@@ -81,6 +81,7 @@ const Register = () => {
               value={Values.password}
               onChange={change}
               placeholder="Password"
+              autoComplete="new-password"
             />
 
             <PasswordRequirements criteria={criteria} />

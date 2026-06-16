@@ -65,6 +65,7 @@ const Login = () => {
               value={Values.password}
               onChange={change}
               placeholder="Password"
+              autoComplete="current-password"
             />
             <button className="btn-primary mt-2" type="submit">
               Login

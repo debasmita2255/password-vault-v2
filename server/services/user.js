@@ -165,8 +165,8 @@ const deleteAccount = async (req, res) => {
 
     res.clearCookie("pvUserToken", {
       httpOnly: true,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       secure: process.env.NODE_ENV === "production",
-      sameSite: "None",
     });
 
     return res.status(200).json({ success: "Account permanently deleted." });

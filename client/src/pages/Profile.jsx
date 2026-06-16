@@ -235,11 +235,22 @@ const Profile = () => {
                 onSubmit={handlePasswordChange}
                 className="bg-black/20 rounded-xl p-4 flex flex-col gap-4"
               >
+                {/* The Hidden Field to satisfy Chrome's password manager */}
+                <input
+                  type="text"
+                  name="username"
+                  value={userInfo.email || userInfo.username}
+                  autoComplete="username"
+                  className="hidden"
+                  readOnly
+                />
+
                 <PasswordInput
                   name="currentPassword"
                   value={passwordData.currentPassword}
                   onChange={handleInputChange}
                   placeholder="Current Master Password"
+                  autoComplete="current-password"
                 />
 
                 <PasswordInput
@@ -247,6 +258,7 @@ const Profile = () => {
                   value={passwordData.newPassword}
                   onChange={handleInputChange}
                   placeholder="New Master Password"
+                  autoComplete="new-password"
                 />
 
                 {passwordData.newPassword && (
@@ -258,6 +270,7 @@ const Profile = () => {
                   value={passwordData.confirmPassword}
                   onChange={handleInputChange}
                   placeholder="Confirm New Password"
+                  autoComplete="new-password"
                 />
 
                 {passwordData.confirmPassword && !passwordsMatch && (

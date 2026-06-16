@@ -67,6 +67,7 @@ const CredentialForm = ({
               placeholder="johndoe@example.com"
               required
               className="input-field"
+              autoComplete="username"
             />
           </div>
 
@@ -78,6 +79,7 @@ const CredentialForm = ({
               name="password"
               value={formData.password}
               onChange={handleChange}
+              autoComplete="new-password"
             />
           </div>
 
