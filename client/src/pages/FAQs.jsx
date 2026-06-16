@@ -5,7 +5,7 @@ import PageTransition from "../components/PageTransition";
 const FAQ_DATA = [
   {
     q: "Can anyone with the database access see my saved passwords?",
-    a: "Absolutely not. We utilize a strict Zero-Knowledge architecture. Your data is encrypted directly on your device before it is ever sent to our database. We never receive, store, or transmit your Master Password, meaning we only ever see unreadable mathematical ciphertext.",
+    a: "Absolutely not. We utilize a strict Zero-Knowledge architecture. Your data is encrypted directly on your device before it is ever sent to our database. While the Master Password is required for login, it is never stored in plain text. The moment it reaches the server, it is scrambled by a one-way, irreversible hashing algorithm (bcrypt).",
   },
   {
     q: "What happens if I forget my Master Password?",
