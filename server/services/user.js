@@ -115,4 +115,74 @@ const getUserDetails = async (req, res) => {
   }
 };
 
-module.exports = { register, login, logout, getUserDetails };
+const changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword, updatedCredentials } = req.body;
+    const userId = req.user._id;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ error: "Current password incorrect" });
+    }
+
+    const hashPass = await bcrypt.hash(newPassword, 10);
+    user.password = hashPass;
+    await user.save();
+
+    if (updatedCredentials && updatedCredentials.length > 0) {
+      const bulkOps = updatedCredentials.map((cred) => ({
+        updateOne: {
+          filter: { _id: cred._id, user: userId },
+          update: {
+            $set: { encryptedPassword: cred.encryptedPassword, iv: cred.iv },
+          },
+        },
+      }));
+      await Credentials.bulkWrite(bulkOps);
+    }
+
+    return res.status(200).json({
+      success: "Master password changed and vault updated successfully!",
+    });
+  } catch (error) {
+    console.log("Change Password Error:", error);
+    return res.status(500).json({ error: "Internal server error." });
+  }
+};
+
+const deleteAccount = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    await Credentials.deleteMany({ user: userId });
+
+    await User.findByIdAndDelete(userId);
+
+    res.clearCookie("pvUserToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "None",
+    });
+
+    return res.status(200).json({ success: "Account permanently deleted." });
+  } catch (error) {
+    console.log("Delete Account Error:", error);
+    return res
+      .status(500)
+      .json({ error: "Internal server error during account deletion." });
+  }
+};
+
+module.exports = {
+  register,
+  login,
+  logout,
+  getUserDetails,
+  changePassword,
+  deleteAccount,
+};
