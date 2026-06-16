@@ -45,7 +45,10 @@ const Navbar = () => {
 
   return (
     <div className="fixed top-6 left-0 right-0 z-50 flex flex-col items-center px-4 pointer-events-none">
-      <nav className="glass-card rounded-full pointer-events-auto flex w-full md:w-max max-w-[95vw] items-center justify-between gap-3 md:gap-15 px-4 py-2 md:px-8 md:py-3 transition-all duration-500">
+      <nav className="glass-card relative overflow-hidden rounded-full pointer-events-auto flex w-full md:w-max max-w-[95vw] items-center justify-between gap-3 md:gap-15 px-4 py-2 md:px-8 md:py-3 transition-all duration-500">
+        {/* isolated blur layer */}
+        <div className="absolute inset-0 -z-10 backdrop-blur-[20px] transform-gpu pointer-events-none" />
+
         {/* hamburger icon trigger */}
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -103,7 +106,10 @@ const Navbar = () => {
 
       {/* mobile dropdown */}
       {isMenuOpen && (
-        <div className="glass-card rounded-2xl pointer-events-auto mt-3 flex flex-col items-center gap-5 p-6 w-[85vw] max-w-sm md:hidden animate-page-enter shadow-[0_12px_40px_rgba(0,0,0,0.4)]">
+        <div className="glass-card relative overflow-hidden rounded-2xl pointer-events-auto mt-3 flex flex-col items-center gap-5 p-6 w-[85vw] max-w-sm md:hidden shadow-[0_12px_40px_rgba(0,0,0,0.4)]">
+          {/* ioslated blur layer */}
+          <div className="absolute inset-0 -z-10 backdrop-blur-[20px] transform-gpu pointer-events-none" />
+
           {NAV_LINKS.map(({ path, label }) => (
             <Link
               key={path}
