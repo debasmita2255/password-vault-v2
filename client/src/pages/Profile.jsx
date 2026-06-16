@@ -310,9 +310,16 @@ const Profile = () => {
           <div className="mb-8">
             <button
               onClick={handleExportData}
-              className="w-full bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 transition-colors duration-300 py-3 rounded-xl font-medium border border-indigo-500/20"
+              disabled={!masterPassword}
+              className={`w-full transition-all duration-300 py-3 rounded-xl font-medium border ${
+                !masterPassword
+                  ? "bg-indigo-200/10 text-gray-500 border-gray-700/50 cursor-not-allowed opacity-70"
+                  : "bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border-indigo-500/20"
+              }`}
             >
-              Export Decrypted Vault Data (CSV)
+              {!masterPassword
+                ? "Vault Locked - Cannot Export"
+                : "Export Decrypted Vault Data (CSV)"}
             </button>
           </div>
 

@@ -1,14 +1,64 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import api from "../api";
 import PasswordInput from "./PasswordInput";
+import { decryptPassword } from "../utils/encryption";
 
 const UnlockVault = ({ setMasterPassword, userSalt }) => {
   const [password, setPassword] = useState("");
+  const [isUnlocking, setIsUnlocking] = useState(false);
   const navigate = useNavigate();
 
-  const handleUnlock = (e) => {
+  const handleUnlock = async (e) => {
     e.preventDefault();
-    if (password) setMasterPassword(password);
+    if (!password) return;
+
+    setIsUnlocking(true);
+    try {
+      // fetch the vault data to test the password
+      const res = await api.get("/credentials/getAll");
+      const vaultData = res.data.credentials || [];
+
+      // Scenario A: Vault has items (Zero-Knowledge Decryption Test)
+      if (vaultData.length > 0) {
+        const testDecrypt = decryptPassword(
+          vaultData[0].encryptedPassword,
+          vaultData[0].iv,
+          password,
+          userSalt,
+        );
+
+        if (!testDecrypt) {
+          toast.error("Incorrect Master Password. Please try again.");
+          setIsUnlocking(false);
+          return;
+        }
+      }
+      // Scenario B: Vault is empty (Server-Side Hash Check)
+      else {
+        try {
+          const userRes = await api.get("/users/userDetails");
+          const email = userRes.data.user.email;
+
+          // ping the login route purely to check if the password matches the hash
+          await api.post("/users/login", { email, password });
+        } catch (error) {
+          // if the login route throws an error, the password was wrong
+          toast.error("Incorrect Master Password. Please try again.");
+          setIsUnlocking(false);
+          return;
+        }
+      }
+
+      // if we made it here, the password is mathematically verified
+      setMasterPassword(password);
+      toast.success("Vault unlocked successfully!");
+    } catch (error) {
+      toast.error("Error verifying password. Please try again.");
+    } finally {
+      setIsUnlocking(false);
+    }
   };
 
   // a safety function to completely wipe the session with missing salt
@@ -61,9 +111,10 @@ const UnlockVault = ({ setMasterPassword, userSalt }) => {
               />
               <button
                 type="submit"
+                disabled={isUnlocking}
                 className="w-full bg-white/90 text-indigo-800 font-bold py-3 mt-2 rounded-xl hover:bg-white transition-all duration-300"
               >
-                Unlock Vault
+                {isUnlocking ? "Verifying..." : "Unlock Vault"}
               </button>
             </form>
           </>
