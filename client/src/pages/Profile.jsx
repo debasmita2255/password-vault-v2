@@ -162,6 +162,11 @@ const Profile = () => {
   };
 
   const handleDeleteAccount = async () => {
+    if (!masterPassword) {
+      toast.error("You must unlock your vault to perform this action.");
+      return;
+    }
+
     const confirmDelete = window.confirm(
       "CRITICAL WARNING: Are you absolutely sure you want to delete your account? All your credentials will be permanently destroyed. This cannot be undone.",
     );
@@ -172,7 +177,7 @@ const Profile = () => {
       "To confirm permanent deletion, please enter your Master Password:",
     );
 
-    if (passwordCheck !== masterPassword) {
+    if (!passwordCheck || passwordCheck !== masterPassword) {
       toast.error("Incorrect Master Password. Account deletion aborted.");
       return;
     }
@@ -331,9 +336,16 @@ const Profile = () => {
             <div className="flex flex-col gap-4">
               <button
                 onClick={handleDeleteAccount}
-                className="w-full bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors duration-300 py-3 rounded-xl font-medium border border-red-500/20"
+                disabled={!masterPassword}
+                className={`w-full transition-all duration-300 py-3 rounded-xl font-medium border ${
+                  !masterPassword
+                    ? "bg-red-900/20 text-gray-500 border-red-950/10 cursor-not-allowed opacity-70"
+                    : "bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/20"
+                }`}
               >
-                Permanently Delete Account
+                {!masterPassword
+                  ? "Vault Locked - Cannot Delete Account"
+                  : "Permanently Delete Account"}
               </button>
             </div>
           </div>
